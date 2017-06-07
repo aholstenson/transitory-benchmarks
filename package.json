@@ -16,6 +16,6 @@
     "random-seed": "^0.3.0",
     "tiny-lfu-cache": "^1.0.0",
     "tiny-lru": "^1.4.9",
-    "transitory": "^0.1.1"
+    "transitory": "git+https://git@github.com/aholstenson/transitory.git"
   }
 }

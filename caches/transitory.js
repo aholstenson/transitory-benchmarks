@@ -6,7 +6,7 @@ module.exports = class TransitorySimulator {
 	constructor(counter, options) {
 		this.counter = counter;
 		this.cache = transitory()
-			.withMaxSize(options.maxSize)
+			.maxSize(options.maxSize)
 			.build();
 	}
 
