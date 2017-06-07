@@ -110,7 +110,7 @@ function report(dataset) {
 	.then(results => {
 		const table = new Table();
 		const optionKeys = Object.keys(options)
-		table.columns('Cache', ...optionKeys);
+		table.columns('Cache', ...optionKeys, 'Time');
 
 		// Find the best value
 		optionKeys.forEach(opt => {
@@ -131,11 +131,14 @@ function report(dataset) {
 		});
 
 		Object.keys(simulators).forEach(key => {
-			table.row(key, ...optionKeys.map(opt => {
+			let time = 0;
+			const mapped = optionKeys.map(opt => {
 				const res = results[opt][key];
 				if(res instanceof Error) {
 					return chalk.red('-');
 				}
+
+				time += res.time;
 
 				const rate = res.hitRate.toFixed(2);
 				if(rate == options[opt].best && ! options[opt].allSame) {
@@ -143,19 +146,13 @@ function report(dataset) {
 				} else {
 					return rate;
 				}
-			}));
+			});
+			table.row(key, ...mapped, time + ' ' + chalk.dim('ms'));
 		});
 		table.print();
 		console.log('');
 	});
 }
-
-/*
-// Warm-up by running the random dataset a few times
-for(let i=0; i<10; i++) {
-	simulateDataset(datasets.random, { maxSize: 1000 });
-}
-*/
 
 sequence(datasets, (d, key) => {
 	return report(key, { maxSize: 500 });
