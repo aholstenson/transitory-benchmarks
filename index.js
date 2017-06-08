@@ -5,6 +5,8 @@ const Counter = require('./counter');
 const Table = require('./table');
 
 const simulators = {
+	'optimal': require('./caches/optimal'),
+
 	'transitory': require('./caches/transitory'),
 	'tiny-lfu': require('./caches/tiny-lfu'),
 
@@ -81,6 +83,8 @@ function simulate(dataset, simulator, options) {
 	const now = Date.now();
 	return dataset.flush(sim)
 		.then(() => {
+			if(sim.finish) sim.finish();
+
 			const time = Date.now() - now;
 
 			return {
@@ -97,7 +101,6 @@ function simulate(dataset, simulator, options) {
 
 function simulateDataset(dataset, options) {
 	dataset = dataset();
-	const result = {};
 	return sequence(simulators, sim => simulate(dataset, sim, options));
 }
 
@@ -117,6 +120,8 @@ function report(dataset) {
 			let best = 0;
 			let allSame = true;
 			Object.keys(results[opt]).forEach(key => {
+				if(key === 'optimal') return;
+
 				const res = results[opt][key];
 				if(best !== 0 && res.hitRate && best.toFixed(2) !== res.hitRate.toFixed(2)) {
 					allSame = false;
@@ -141,7 +146,12 @@ function report(dataset) {
 				time += res.time;
 
 				const rate = res.hitRate.toFixed(2);
-				if(rate == options[opt].best && ! options[opt].allSame) {
+				if(key == 'optimal') {
+					return chalk.dim(rate);
+				} else if(rate == options[opt].best) {
+					if(options[opt].allSame) {
+						return chalk.yellow(rate);
+					}
 					return chalk.green(rate) + '*';
 				} else {
 					return rate;
