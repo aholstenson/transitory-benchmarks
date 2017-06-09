@@ -123,7 +123,7 @@ function report(dataset) {
 				if(key === 'optimal') return;
 
 				const res = results[opt][key];
-				if(best !== 0 && res.hitRate && best.toFixed(2) !== res.hitRate.toFixed(2)) {
+				if(best !== 0 && res.hitRate && best.toFixed(4) !== res.hitRate.toFixed(4)) {
 					allSame = false;
 				}
 
@@ -131,7 +131,7 @@ function report(dataset) {
 					best = res.hitRate;
 				}
 			});
-			options[opt].best = best.toFixed(2);
+			options[opt].best = best.toFixed(4);
 			options[opt].allSame = allSame;
 		});
 
@@ -145,7 +145,7 @@ function report(dataset) {
 
 				time += res.time;
 
-				const rate = res.hitRate.toFixed(2);
+				const rate = res.hitRate.toFixed(4);
 				if(key == 'optimal') {
 					return chalk.dim(rate);
 				} else if(rate == options[opt].best) {
