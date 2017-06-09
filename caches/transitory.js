@@ -15,6 +15,9 @@ module.exports = class TransitorySimulator {
 		if(! hit) {
 			this.counter.miss();
 			this.cache.set(id, id);
+
+			// Call await to make sure everything is evicted directly
+			this.cache.__await();
 		} else {
 			this.counter.hit();
 		}
