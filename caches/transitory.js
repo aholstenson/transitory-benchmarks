@@ -12,7 +12,7 @@ module.exports = class TransitorySimulator {
 
 	receive(id) {
 		const hit = this.cache.get(id);
-		if(! hit) {
+		if(hit === null) {
 			this.counter.miss();
 			this.cache.set(id, id);
 

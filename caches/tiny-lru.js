@@ -12,7 +12,7 @@ module.exports = class TinyLRUSimulator {
 		let str = String(id);
 
 		const hit = this.cache.get(str);
-		if(! hit) {
+		if(hit == null) {
 			this.counter.miss();
 			this.cache.set(str, id);
 		} else {

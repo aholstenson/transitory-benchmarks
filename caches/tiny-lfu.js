@@ -10,7 +10,7 @@ module.exports = class TinyLFUSimulator {
 
 	receive(id) {
 		const hit = this.cache.get(id);
-		if(! hit) {
+		if(hit == null) {
 			this.counter.miss();
 			this.cache.put(id, id);
 		} else {

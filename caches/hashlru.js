@@ -10,7 +10,7 @@ module.exports = class HLRUSimulator {
 
 	receive(id) {
 		const hit = this.cache.get(id);
-		if(! hit) {
+		if(hit === null || typeof hit === 'undefined') {
 			this.counter.miss();
 			this.cache.set(id, id);
 		} else {
