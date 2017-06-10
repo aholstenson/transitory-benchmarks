@@ -8,7 +8,7 @@ const simulators = {
 	'optimal': require('./caches/optimal'),
 
 	'transitory': require('./caches/transitory'),
-	'tiny-lfu': require('./caches/tiny-lfu'),
+	'tiny-lfu-cache': require('./caches/tiny-lfu'),
 
 	'hashlru': require('./caches/hashlru'),
 	'tiny-lru': require('./caches/tiny-lru'),
@@ -164,6 +164,12 @@ function report(dataset) {
 	});
 }
 
-sequence(datasets, (d, key) => {
-	return report(key, { maxSize: 500 });
-}).catch(console.error);
+const args = require('yargs').argv;
+
+if(args.dataset) {
+	report(args.dataset);
+} else {
+	sequence(datasets, (d, key) => {
+		return report(key);
+	}).catch(console.error);
+}
