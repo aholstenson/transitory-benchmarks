@@ -8,7 +8,7 @@ class RandomDataset {
 		this.rand = random.create();
 
 		this.items = 50000;
-		this.range = 2500;
+		this.range = 2500 - 1;
 	}
 
 	flush(simulator) {

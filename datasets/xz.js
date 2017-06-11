@@ -11,19 +11,20 @@ module.exports = class BinaryXzTrace {
 
 	flush(simulator, progress) {
 		const init = progress.text;
-		return new Promise((resolve, reject) => {
-			const out = new WritableStreamBuffer();
-			const stream = fs.createReadStream(this.file)
-				.pipe(lzma.createDecompressor())
-				.pipe(out);
+		let aborted = false;
 
-			stream.on('finish', () => {
-				const buffer = out.getContents();
-
+		const promise = new Promise((resolve, reject) => {
+			let buffer = this.buffer;
+			function flush() {
 				let i = 0;
 				let n = buffer.length / 4;
 
 				function chunk() {
+					if(aborted) {
+						reject(new Error('Aborted'));
+						return;
+					}
+
 					try {
 						for(let c = 0; c<5 && i<n; c++, i++) {
 							const id = buffer.readInt32BE(i * 4);
@@ -45,7 +46,26 @@ module.exports = class BinaryXzTrace {
 				}
 
 				chunk();
+			}
+
+			if(buffer) {
+				flush();
+				return;
+			}
+
+			const out = new WritableStreamBuffer();
+			const stream = fs.createReadStream(this.file)
+				.pipe(lzma.createDecompressor())
+				.pipe(out);
+
+			stream.on('finish', () => {
+				this.buffer = buffer = out.getContents();
+				flush();
 			});
 		});
+		promise.abort = () => {
+			aborted = true;
+		};
+		return promise;
 	}
 }
