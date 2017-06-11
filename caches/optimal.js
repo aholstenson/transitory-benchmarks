@@ -1,5 +1,8 @@
 'use strict';
 
+const counter = Symbol('counter');
+const SortedSet = require('js-sorted-set');
+
 module.exports = class OptimalSimulator {
 	constructor(counter, options) {
 		this.maxSize = options.maxSize;
@@ -9,7 +12,7 @@ module.exports = class OptimalSimulator {
 		this.count = 0;
 		this.order = [];
 		this.access = new Map();
-		this.data = new Set();
+		this.data = new SortedSet({ comparator: (a, b) => b - a });
 
 		this.ts = Number.MAX_VALUE;
 	}
@@ -18,7 +21,9 @@ module.exports = class OptimalSimulator {
 		this.order.push(id);
 		let access = this.access.get(id);
 		if(! access) {
-			this.access.set(id, access = []);
+			access = [];
+			access[counter] = 0;
+			this.access.set(id, access);
 		}
 		access.push(this.count++);
 	}
@@ -29,25 +34,32 @@ module.exports = class OptimalSimulator {
 			const times = this.access.get(id);
 			if(! times) continue;
 
-			const lastTime = times.shift();
-			const found = this.data.delete(lastTime);
+			const idx = times[counter];
+			const lastTime = times[idx];
+			times[counter]++;
+			const found = this.data.contains(lastTime);
+			if(found) {
+				this.data.remove(lastTime);
+			}
 
-			if(times.length) {
-				this.data.add(times[0]);
+			let v;
+			if(idx + 1 < times.length) {
+				v = times[idx + 1];
 			} else {
-				this.data.add(this.ts--);
+				v = this.ts--;
+			}
+
+			if(! this.data.contains(v)) {
+				this.data.insert(v);
 			}
 
 			if(found) {
 				this.counter.hit();
 			} else {
 				this.counter.miss();
-				if(this.data.size > this.maxSize) {
-					let smallest = 0;
-					this.data.forEach(d => {
-						smallest = Math.max(smallest, d);
-					})
-					this.data.delete(smallest);
+				if(this.data.length > this.maxSize) {
+					let smallest = this.data.beginIterator().next().value();
+					this.data.remove(smallest);
 				}
 			}
 		}
