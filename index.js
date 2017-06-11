@@ -18,6 +18,9 @@ const simulators = {
 const datasets = {};
 pushDataset('random');
 pushDataset('lirs');
+pushDataset('oltp');
+pushDataset('glimpse');
+pushDataset('cache2k');
 
 const options = {
 	10: { maxSize: 10 },
