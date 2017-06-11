@@ -9,12 +9,11 @@ module.exports = class TinyLRUSimulator {
 	}
 
 	receive(id) {
-		let str = String(id);
-
-		const hit = this.cache.get(str);
+		id = String(id);
+		const hit = this.cache.get(id);
 		if(hit == null) {
 			this.counter.miss();
-			this.cache.set(str, id);
+			this.cache.set(id, id);
 		} else {
 			this.counter.hit();
 		}
