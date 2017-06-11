@@ -3,6 +3,7 @@
 const chalk = require('chalk');
 const Counter = require('./counter');
 const Table = require('./table');
+const ora = require('ora');
 
 const simulators = {
 	'optimal': require('./caches/optimal'),
@@ -79,13 +80,18 @@ function sequence(data, runner) {
  */
 function simulate(dataset, simulator, options) {
 	const counter = new Counter();
-	const sim = new simulator(counter, options);
+	const sim = new simulators[simulator](counter, options);
 	const now = Date.now();
-	return dataset.flush(sim)
+	const spinner = ora(simulator + ' maxSize=' + options.maxSize).start();
+	return dataset.flush(sim, spinner)
 		.then(() => {
-			if(sim.finish) sim.finish();
+			if(sim.finish) {
+				spinner.text = simulator + ' maxSize=' + options.maxSize + ' Finishing';
+				sim.finish();
+			}
 
 			const time = Date.now() - now;
+			spinner.stop();
 
 			return {
 				time: time,
@@ -95,13 +101,14 @@ function simulate(dataset, simulator, options) {
 			};
 		})
 		.catch(err => {
+			spinner.stop();
 			return err;
 		});
 }
 
 function simulateDataset(dataset, options) {
 	dataset = dataset();
-	return sequence(simulators, sim => simulate(dataset, sim, options));
+	return sequence(simulators, (sim, key) => simulate(dataset, key, options));
 }
 
 function report(dataset) {
