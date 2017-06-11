@@ -11,8 +11,11 @@
     "eslint-plugin-node": "^5.0.0"
   },
   "dependencies": {
+    "adaptative-replacement-cache": "^0.1.0",
     "chalk": "^1.1.3",
+    "guild": "^1.2.2",
     "hashlru": "^2.2.0",
+    "lfu-cache": "^0.1.0",
     "lzma-native": "^2.0.2",
     "ora": "^1.2.0",
     "random-seed": "^0.3.0",

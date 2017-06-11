@@ -10,6 +10,9 @@ const simulators = {
 
 	'transitory': require('./caches/transitory'),
 	'tiny-lfu-cache': require('./caches/tiny-lfu'),
+	'lfu-cache': require('./caches/lfu-cache'),
+	'guild': require('./caches/guild'),
+	'arc': require('./caches/arc'),
 
 	'hashlru': require('./caches/hashlru'),
 	'tiny-lru': require('./caches/tiny-lru'),
