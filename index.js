@@ -26,9 +26,11 @@ const simulators = {
 const datasets = {};
 pushDataset('random');
 pushDataset('lirs');
-//pushDataset('oltp');
+pushDataset('oltp');
 pushDataset('glimpse');
-//pushDataset('cache2k');
+pushDataset('cache2k');
+
+const DEFAULT_DATASETS = [ 'random', 'lirs', 'glimpse' ];
 
 function pushDataset(file) {
 	const ds = require('./datasets/' + file);
@@ -317,17 +319,28 @@ function report(dataset, reporter) {
 	});
 }
 
-const args = require('yargs').argv;
+function findDatasets(sets) {
+	const results = [];
+	Object.keys(datasets).forEach(key => {
+		if(sets.indexOf(key) >= 0) {
+			results.push(key);
+		} else {
+			let idx = key.indexOf('.');
+			if(idx > 0 && sets.indexOf(key.substring(0, idx)) >= 0) {
+				results.push(key);
+			}
+		}
+	});
+	return results;
+}
+
+const args = require('yargs')
+	.array('dataset')
+	.argv;
 const reporter = args.markdown ? new MarkdownReporter(args.markdown) : null;
 
-if(args.dataset) {
-	report(args.dataset, reporter)
-		.then(() => reporter && reporter.finish())
-		.catch(console.error);
-} else {
-	sequence(datasets, (d, key) => {
-		return report(key, reporter);
-	})
-		.then(() => reporter && reporter.finish())
-		.catch(console.error);
-}
+sequenceArray(findDatasets(args.dataset || DEFAULT_DATASETS), (key) => {
+	return report(key, reporter);
+})
+	.then(() => reporter && reporter.finish())
+	.catch(console.error);
