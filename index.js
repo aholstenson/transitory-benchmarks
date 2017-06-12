@@ -19,6 +19,7 @@ const simulators = {
 	'arc': require('./caches/arc'),
 
 	//'hashlru': require('./caches/hashlru'), // Disabled due to exceeding max size
+	'lru-cache': require('./caches/lru-cache'),
 	'tiny-lru': require('./caches/tiny-lru'),
 };
 
