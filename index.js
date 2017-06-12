@@ -170,7 +170,6 @@ function simulateDataset(dataset) {
 			console.log();
 
 			const entries = stats.uniqueEntries;
-			const sizes = [ 0.1, 0.25, 0.5, 0.75, 0.80, 0.90 ];
 
 			const options = [];
 			const addedSizes = new Set();
@@ -186,16 +185,23 @@ function simulateDataset(dataset) {
 				});
 			}
 
-			sizes.forEach(s => {
-				const size = Math.floor(entries * s);
-				const powerOfN = toPowerOfN(size);
+			if(dataset.sizes) {
+				// The dataset contains the sizes to use already
+				dataset.sizes.forEach(push);
+			} else {
+				// Calculate some suitable sizes to use
+				const ratios = [ 0.1, 0.25, 0.5, 0.75, 0.80, 0.90 ];
+				ratios.forEach(s => {
+					const size = Math.floor(entries * s);
+					const powerOfN = toPowerOfN(size);
 
-				// Add a version adjusted to nearest 250
-				push(Math.floor(size / 250) * 250);
+					// Add a version adjusted to nearest 250
+					push(Math.floor(size / 250) * 250);
 
-				// Add the nearest power of N
-				push(powerOfN);
-			});
+					// Add the nearest power of N
+					push(powerOfN);
+				});
+			}
 
 			options.sort((a, b) => a.maxSize - b.maxSize);
 

@@ -5,8 +5,10 @@ const lzma = require('lzma-native');
 const { WritableStreamBuffer } = require('stream-buffers');
 
 module.exports = class BinaryXzTrace {
-	constructor(file) {
+	constructor(file, sizes, description) {
 		this.file = file;
+		this.sizes = sizes;
+		this.description = description;
 	}
 
 	flush(simulator, progress) {
