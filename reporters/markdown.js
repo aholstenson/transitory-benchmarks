@@ -42,11 +42,13 @@ module.exports = class MarkdownRepoter {
 							rate = '**' + rate + '**';
 						}
 
+						let msg;
 						if(res.hitRateVsBest != 1.0) {
-							return rate + '<br><sup>-' + ((1.0 - res.hitRateVsBest) * 100).toFixed(2) + '%</sup>';
+							msg = rate + '<br><small>-' + ((1.0 - res.hitRateVsBest) * 100).toFixed(2) + '%</small>';
 						} else {
-							return rate + '<br><sup>-0.0%</sup>';
+							msg = rate + '<br><small>-0.0%</small>';
 						}
+						return msg;
 					})
 				]
 			})

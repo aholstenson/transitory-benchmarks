@@ -1,17 +1,19 @@
 'use strict';
 
-const LRU = require('lru-cache');
+const QuickLRU = require('quick-lru');
 
-module.exports = class LRUCacheSimulator {
+module.exports = class HLRUSimulator {
 	constructor(counter, options) {
 		this.counter = counter;
-		this.cache = new LRU(options.maxSize);
+		this.cache = new QuickLRU({
+			maxSize: options.maxSize
+		});
 	}
 
 	receive(id) {
 		id = String(id);
 		const hit = this.cache.get(id);
-		if(hit == null) {
+		if(hit === null || typeof hit === 'undefined') {
 			this.counter.miss();
 			this.cache.set(id, id);
 		} else {
